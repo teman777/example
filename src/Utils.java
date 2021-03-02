@@ -4,39 +4,56 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Utils {
 
-    public static Object deepCopy(Object obj){
+
+
+    public static Object deepCopyLazy(Object obj){
+        HashMap<String, Object> values = new HashMap<String, Object>();
         Class<?> clazz = obj.getClass();
-        List<String> l = new ArrayList<>();
-        Object res = null;
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        Field[] fields = clazz.getDeclaredFields();
+        for(Field field: fields){
+            field.setAccessible(true);
+            try {
+                values.put(field.getName(), field.get(obj));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        Constructor<?> buildableConstructor = null;
+        for(Constructor<?> constructor: constructors){
+            if(constructor.getParameters().length == 0){
+                buildableConstructor = constructor;
+                break;
+            }
+        }
+        Object result = null;
         try {
-            res = clazz.getDeclaredConstructor(String.class, int.class, List.class).newInstance("1", 2, l);
+            result = buildableConstructor.newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
         }
-
-        Field[] fields = clazz.getDeclaredFields();
         for(Field field: fields){
-
+            field.setAccessible(true);
+            Object value = values.get(field.getName());
+            try {
+                field.set(result, value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
-
-
-
-
-
 
 
         return obj;
-
     }
 
 }
