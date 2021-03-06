@@ -27,7 +27,7 @@ public class Utils {
         for(int i = 0; i < fields.length; i++){
             Object val = null;
             fields[i].setAccessible(true);
-            if(checkClassName(fields[i].getClass().getName())){
+            if(checkClassName(fields[i].getType().getName())){
                 val = fields[i].get(obj);
             } else {
                 val = copyVars(fields[i].get(obj));

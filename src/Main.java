@@ -5,10 +5,14 @@ import java.util.SortedMap;
 public class Main {
     public static void main(String[] args) {
 
-        Woman w = new Woman(10, 45f,"Suka", 12);
-        Woman c = null;
+        List<String> l = new ArrayList<>();
+        l.add("123");
+        l.add("456");
+
+        Man w = new Man("Alex", 25, l);
+        Man c = null;
         try {
-            c = (Woman) Utils.copyVars(w);
+            c = (Man) Utils.copyVars(w);
         } catch (Exception e) {
             e.printStackTrace();
         }
